@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C4 Site Auditor - Results</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { background: #0a0f1a; color: #e0e0e0; font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif; margin: 0; }
+        .container { max-width: 700px; margin: 50px auto; background: rgba(20,30,60,0.92); border-radius: 18px; box-shadow: 0 8px 40px #00eaff44; padding: 44px 32px 36px 32px; border: 2.5px solid #00eaff; animation: neon-glow 2s infinite alternate; }
+        @keyframes neon-glow { 0% { box-shadow: 0 0 24px #00eaff44; border-color: #00eaff; } 100% { box-shadow: 0 0 40px #00eaffcc; border-color: #7fd7ff; } }
+        h1 { text-align: center; color: #00eaff; font-weight: 700; font-size: 2.2em; letter-spacing: 1px; margin-bottom: 32px; text-shadow: 0 2px 16px #00eaff44; }
+        .circular-bar { display: flex; justify-content: center; align-items: center; margin-bottom: 32px; }
+        .circle-wrap { width: 140px; height: 140px; background: #101828; border-radius: 50%; box-shadow: 0 0 32px #00eaff44; display: flex; align-items: center; justify-content: center; position: relative; }
+        .circle-bg { stroke: #222b3a; }
+        .circle { stroke: #00eaff; filter: drop-shadow(0 0 8px #00eaffcc); transition: stroke-dasharray 1s cubic-bezier(.77,0,.18,1); }
+        .circle-text { position: absolute; width: 100%; text-align: center; top: 50%; left: 0; transform: translateY(-50%); color: #00eaff; font-size: 2.1em; font-weight: 700; letter-spacing: 1px; text-shadow: 0 2px 16px #00eaff44; }
+        .results { margin-top: 18px; }
+        .agent-block { background: rgba(10,20,40,0.96); border-radius: 12px; margin-bottom: 18px; box-shadow: 0 1px 8px #00eaff22; border: 2px solid #00eaff; transition: box-shadow 0.3s, border 0.3s; }
+        .agent-header { display: flex; align-items: center; justify-content: space-between; cursor: pointer; padding: 18px 22px; border-radius: 12px; transition: background 0.2s; }
+        .agent-header:hover { background: #101828; box-shadow: 0 2px 16px #00eaff44; }
+        .agent-title { color: #7fd7ff; font-size: 1.2em; font-weight: 600; letter-spacing: 0.5px; }
+        .agent-score { background: #101828; color: #00eaff; border: 2px solid #00eaff; border-radius: 50px; padding: 6px 18px; font-weight: 700; font-size: 1.1em; box-shadow: 0 0 8px #00eaff44; }
+        .dropdown-arrow { transition: transform 0.4s cubic-bezier(.77,0,.18,1); color: #00eaff; font-size: 1.4em; }
+        .agent-details { max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(.77,0,.18,1); background: #101828; border-radius: 0 0 12px 12px; padding: 0 22px; }
+        .agent-block.open .agent-details { max-height: 400px; padding: 18px 22px; }
+        .agent-block.open .dropdown-arrow { transform: rotate(180deg); }
+        .agent-block ul { margin: 8px 0 0 18px; color: #e0e0e0; }
+        .agent-block .error { color: #ff5252; font-weight: bold; }
+        .download-btn { display: inline-block; background: linear-gradient(90deg,#00eaff,#3a8dde); color: #181a1b; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 700; margin-top: 18px; font-size: 1.1em; letter-spacing: 1px; box-shadow: 0 2px 16px #00eaff44; border: none; transition: background 0.3s, transform 0.15s, box-shadow 0.3s; position: relative; overflow: hidden; }
+        .download-btn::before { content: ""; position: absolute; left: -75%; top: 0; width: 50%; height: 100%; background: rgba(255,255,255,0.08); transform: skewX(-20deg); transition: left 0.5s; }
+        .download-btn:hover { background: linear-gradient(90deg,#3a8dde,#00eaff); color: #fff; transform: translateY(-2px) scale(1.04); box-shadow: 0 4px 32px #00eaff99; }
+        .download-btn:hover::before { left: 120%; }
+        .audit-another-btn { display: block; margin: 32px auto 0 auto; background: transparent; color: #00eaff; border: 2px solid #00eaff; border-radius: 8px; padding: 12px 32px; font-size: 1.1em; font-weight: 700; letter-spacing: 1px; cursor: pointer; box-shadow: 0 2px 16px #00eaff44; transition: background 0.3s, color 0.3s, transform 0.15s, box-shadow 0.3s; }
+        .audit-another-btn:hover { background: #00eaff; color: #181a1b; transform: translateY(-2px) scale(1.04); box-shadow: 0 4px 32px #00eaff99; }
+        @media (max-width: 700px) { .container { padding: 16px 2vw; } h1 { font-size: 1.3em; } .circle-wrap { width: 110px; height: 110px; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Audit Results for {{ url }}</h1>
+        <div class="circular-bar">
+            <div class="circle-wrap">
+                <svg width="140" height="140">
+                    <circle class="circle-bg" cx="70" cy="70" r="60" stroke-width="14" fill="none" />
+                    <circle class="circle" cx="70" cy="70" r="60" stroke-width="14" fill="none" stroke-dasharray="0 377" stroke-linecap="round" />
+                </svg>
+                <div class="circle-text" id="overallScore">{{ overall_score }}%</div>
+            </div>
+        </div>
+        <div class="results">
+            {% for agent, data in results.items() %}
+                <div class="agent-block">
+                    <div class="agent-header" onclick="toggleDropdown(this)">
+                        <span class="agent-title">{{ agent }}</span>
+                        <span class="agent-score">{{ data.score if data.score is defined else '?' }}/100</span>
+                        <span class="dropdown-arrow">&#9660;</span>
+                    </div>
+                    <div class="agent-details">
+                        {% if data.summary %}
+                            <p><strong>Summary:</strong> {{ data.summary }}</p>
+                        {% endif %}
+                        {% if data.suggestions %}
+                            <ul>
+                            {% for suggestion in data.suggestions %}
+                                <li>{{ suggestion }}</li>
+                            {% endfor %}
+                            </ul>
+                        {% endif %}
+                        {% if data.error %}
+                            <p class="error">Error: {{ data.error }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <a href="/download/{{ pdf_path }}" class="download-btn">Download PDF Report</a>
+        <button class="audit-another-btn" onclick="window.location.href='/'">Audit Another Website</button>
+    </div>
+    <script>
+        // Animate circular bar
+        document.addEventListener('DOMContentLoaded', function() {
+            var score = parseInt(document.getElementById('overallScore').textContent);
+            var circle = document.querySelector('.circle');
+            var radius = 60;
+            var circumference = 2 * Math.PI * radius;
+            var percent = Math.max(0, Math.min(score, 100));
+            var dash = (percent / 100) * circumference;
+            circle.setAttribute('stroke-dasharray', dash + ' ' + (circumference - dash));
+        });
+        // Dropdown logic
+        function toggleDropdown(header) {
+            var block = header.parentElement;
+            block.classList.toggle('open');
+        }
+    </script>
+</body>
+</html>
