@@ -14,7 +14,7 @@ A web-based tool to audit websites for performance, SEO, security, code quality,
 ## Installation
 1. Clone this repository:
    ```
-   git clone https://github.com/yourusername/c4-site-auditor.git
+   git clone https://github.com/Lobo55x/c4-site-auditor.git
    cd c4-site-auditor
    ```
 2. Install dependencies:
